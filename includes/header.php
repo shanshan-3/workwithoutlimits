@@ -1,26 +1,25 @@
 <nav class="navbar navbar-expand-lg 
             navbar-light 
-            bg-light 
-            border border-dark">
+            bg-light
+            border border-1">
   <div class="container-fluid">
 
-    <a class="navbar-brand">workwithoutlimits</a>
+    <a class="navbar-brand" href="index.php">workwithoutlimits</a>
 
-    <button class="navbar-toggler" type="button" 
-            data-bs-toggle="collapse" 
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav" 
-            aria-expanded="false" 
-            aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li><a class="nav-link" href="index.php">Job</a></li>
-        <li><a class="nav-link" href="about.php">About</a></li>
-        <li><a class="nav-link" href="account.php">Account</a></li>
+      <ul class="navbar-nav d-flex flex-row me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.php">Job</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.php">About</a>
+        </li>
       </ul>
-    </div>
+    <ul class="navbar-nav">
+      <li class="nav-item">
+          <a class="nav-link" href="account.php">
+            <span class="bi bi-person-circle"> Login/Signup</span>
+          </a>
+        </li>
+    </ul>
   </div>
 </nav>
