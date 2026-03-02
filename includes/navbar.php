@@ -8,7 +8,7 @@ $current = basename($_SERVER['PHP_SELF']);
   <div class="container">
 
     <a class="navbar-brand fw-bold" href="index.php">
-      work<span class="text-warning">without</span>limits
+      work<span class="text-warning font-">without</span>limits
     </a>
 
     <?php if ($role !== 'guest'): ?>
@@ -31,10 +31,10 @@ $current = basename($_SERVER['PHP_SELF']);
             <a class="nav-link <?= $current==='index.php'?'active':'' ?>" href="index.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-outline-light btn-sm" href="login.php">Login</a>
+            <a class="btn btn-outline-light btn-sm" href="auth/login.php">Login</a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-warning btn-sm text-dark fw-semibold" href="register.php">Register</a>
+            <a class="btn btn-warning btn-sm bi bi-person text-dark fw-semibold" href="auth/register.php"> Sign up</a>
           </li>
         </ul>
 

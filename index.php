@@ -14,10 +14,12 @@
           Connect with employers or find the talent you need —
           fast, free, and straightforward.
         </p>
-        <a href="register.php" class="btn btn-warning btn-lg text-dark fw-bold me-2">Get Started</a>
-        <a href="login.php"    class="btn btn-outline-dark btn-lg">Log In</a>
+        <a href="auth/register.php" class="btn btn-warning btn-lg text-dark fw-bold me-2">Get Started</a>
+        <a href="auth/login.php"    class="btn btn-outline-dark btn-lg">Log In</a>
     </div>
     <br>
+
+    <!-- CARDS -->
     <div class="container pb-5" id="cards">
       <div class="row g-4">
         <div class="col-md-4">
@@ -49,6 +51,10 @@
         </div>
       </div>
     </div>
+    <br>
+    <br>
+    <br>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
+<?php include 'includes/footer.php'; ?>
 </html>

@@ -1,0 +1,79 @@
+<?php session_start();
+include "../includes/header.php";
+require_once '../config/database.php';
+
+$error ="";
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+  $email = trim($_POST['email']);
+  $password = $_POST['password'];
+
+  if(empty($email) || empty($password)){
+    $error = "All fields are required.";
+  } else {
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if($user['role'] == 'employer'){
+      header("Location: ../employer/dashboard.php");
+    }else{
+      header("Location: ../seeker/dashboard.php");
+    }
+  }
+}
+
+?>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="container">
+    <a class="navbar-brand fw-bold" href="../index.php">
+      work<span class="text-warning">without</span>limits
+    </a>
+  </nav>
+</nav>
+
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5">
+  <div class="col-11 col-sm-8 col-md-6 col-lg-5">
+    <div class="card border-0 shadow">
+      <div class="card-body p-5">
+
+        <h3 class="text-center fw-bold mb-1">Login</h3>
+        <p class="text-center text-muted mb-4">Join work<span class="text-warning">without</span>limits today</p>
+
+        <form action="login.php" method="POST">
+
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-envelope-open"></i>
+              </span>
+              <input type="email" name="email" class="form-control"
+                     placeholder="Email Address" autocomplete="off" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-key"></i>
+              </span>
+            <input type="password" name="password" class="form-control"
+                   placeholder="Password" autocomplete="off" required>
+            </div>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-warning text-dark fw-bold">Login</button>
+          </div>
+
+        </form>
+
+        <p class="text-center text-muted mt-3 mb-0">
+          Not registered? <a href="register.php" class="text-warning">Create an account</a>
+        </p>
+
+      </div>
+    </div>
+  </div>
+</div>
