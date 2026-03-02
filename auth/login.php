@@ -1,5 +1,4 @@
 <?php session_start();
-include "../includes/header.php";
 require_once '../config/database.php';
 
 $error ="";
@@ -15,14 +14,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    if (!$user || !password_verify($password, $user['password'])) {
+      $error = "Invalid email or password.";
+    } else {
+       $_SESSION['user_id'] = $user['id'];
+       $_SESSION['role']    = $user['role'];
+       $_SESSION['email']   = $user['email'];
+    
     if($user['role'] == 'employer'){
       header("Location: ../employer/dashboard.php");
     }else{
       header("Location: ../seeker/dashboard.php");
     }
+    exit();
+    }
   }
 }
-
+include "../includes/header.php";
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -40,6 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
         <h3 class="text-center fw-bold mb-1">Login</h3>
         <p class="text-center text-muted mb-4">Join work<span class="text-warning">without</span>limits today</p>
+        
+        <?php if ($error): ?>
+          <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
 
         <form action="login.php" method="POST">
 

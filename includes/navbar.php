@@ -28,9 +28,6 @@ $current = basename($_SERVER['PHP_SELF']);
 
         <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
-            <a class="nav-link <?= $current==='index.php'?'active':'' ?>" href="index.php">Home</a>
-          </li>
-          <li class="nav-item">
             <a class="btn btn-outline-light btn-sm" href="auth/login.php">Login</a>
           </li>
           <li class="nav-item">

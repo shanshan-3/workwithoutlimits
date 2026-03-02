@@ -15,7 +15,6 @@
           fast, free, and straightforward.
         </p>
         <a href="auth/register.php" class="btn btn-warning btn-lg text-dark fw-bold me-2">Get Started</a>
-        <a href="auth/login.php"    class="btn btn-outline-dark btn-lg">Log In</a>
     </div>
     <br>
 
