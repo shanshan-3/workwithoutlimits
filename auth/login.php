@@ -16,20 +16,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     if (!$user || !password_verify($password, $user['password'])) {
       $error = "Invalid email or password.";
-    } else {
-       $_SESSION['user_id'] = $user['id'];
-       $_SESSION['role']    = $user['role'];
-       $_SESSION['email']   = $user['email'];
-    
-    if($user['role'] == 'employer'){
-      header("Location: ../employer/dashboard.php");
-    }else{
-      header("Location: ../seeker/dashboard.php");
-    }
-    exit();
+    }else {
+      $_SESSION['user_id'] = $user['user_id'];
+      $_SESSION['role']    = $user['role'];
+      $_SESSION['email']   = $user['email'];
+      
+      if($user['role'] == 'employer'){
+
+        $check = $pdo->prepare("SELECT profile_id FROM employer_profiles WHERE user_id = ?");
+        $check->execute([$user['user_id']]);
+          
+      if(!$check->fetch()){
+          header("Location: ../employer/profile.php?setup=1");
+          exit();
+        }else {
+          header("Location: ../employer/dashboard.php");
+          exit();
+        }
+      }else {
+        $check = $pdo->prepare("SELECT profile_id FROM seeker_profiles WHERE user_id = ?");
+        $check->execute([$user['user_id']]);
+
+        if(!$check->fetch()){
+          header("Location: ../jobseeker/profile.php?setup=1");
+          exit();
+        }else{
+          header("Location: ../jobseeker/dashboard.php");
+          exit();
+        }
+      }
     }
   }
 }
+
 include "../includes/header.php";
 ?>
 

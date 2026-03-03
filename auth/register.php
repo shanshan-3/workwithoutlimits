@@ -1,49 +1,57 @@
 <?php session_start();
-include "../includes/header.php";
 include "../config/database.php"; 
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $email    = trim($_POST["email"]);
-    $password = $_POST["password"];
-    $role     = $_POST["role"];
+  $email    = trim($_POST["email"]);
+  $password = $_POST["password"];
+  $role     = $_POST["role"];
 
-    $allowed_roles = ['seeker', 'employer'];
+  $allowed_roles = ['seeker', 'employer'];
 
-    if (empty($email) || empty($password) || empty($role)) {
-        $error = "All fields are required.";
+  if (empty($email) || empty($password) || empty($role)) {
+      $error = "All fields are required.";
 
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Invalid email format.";
+  }elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $error = "Invalid email format.";
 
-    } elseif (strlen($password) < 6) {
-        $error = "Password must be at least 6 characters.";
+  }elseif (strlen($password) < 6) {
+      $error = "Password must be at least 6 characters.";
     
-    } elseif (!in_array($role, $allowed_roles)) {
-        $error = "Invalid role selected.";
+  }elseif (!in_array($role, $allowed_roles)) {
+      $error = "Invalid role selected.";
 
-    } else {
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $count = $stmt->fetchColumn();
+  }else {
+      $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+      $stmt->execute([$email]);
+      $count = $stmt->fetchColumn();
 
-        if ($count > 0) {
-            $error = "Email is already registered.";
+      if ($count > 0) {
+          $error = "Email is already registered.";
         
-        } else {
-            $hashed = password_hash($password, PASSWORD_DEFAULT);
+      } else {
+          $hashed = password_hash($password, PASSWORD_DEFAULT);
 
-            $insert = $pdo->prepare(
-            "INSERT INTO users (email, password, role) VALUES (?, ?, ?)"
-            );
-            $insert->execute([$email, $hashed, $role]);
-            header("Location: login.php");
-            exit;
+          $insert = $pdo->prepare(
+          "INSERT INTO users (email, password, role) VALUES (?, ?, ?)"
+           );
+          $insert->execute([$email, $hashed, $role]);
+            
+          $_SESSION['user_id'] = $pdo->lastInsertId();
+          $_SESSION['role'] = $role;
+          $_SESSION['email'] = $email;
+
+          if($role == 'seeker'){
+            header ("Location: ../jobseeker/profile.php?setup=1");
+          } else {
+            header ("Location: ../employer/profile.php?setup=1");
           }
-    }
-
+          exit();
+      }
+  }
 }
+include "../includes/header.php";
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -63,6 +71,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p class="text-center text-muted mb-4">Join work<span class="text-warning">without</span>limits today</p>
 
         <form action="register.php" method="POST">
+          <?php if ($error): ?>
+          <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+          <?php endif; ?>
           <div class="mb-3">
             <div class="input-group">
               <span class="input-group-text">
