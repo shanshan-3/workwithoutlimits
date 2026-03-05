@@ -1,5 +1,5 @@
 <?php session_start();
-include "../config/database.php"; 
+include "../config/database.php";
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -11,44 +11,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $allowed_roles = ['seeker', 'employer'];
 
   if (empty($email) || empty($password) || empty($role)) {
-      $error = "All fields are required.";
+    $error = "All fields are required.";
+  } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $error = "Invalid email format.";
+  } elseif (strlen($password) < 6) {
+    $error = "Password must be at least 6 characters.";
+  } elseif (!in_array($role, $allowed_roles)) {
+    $error = "Invalid role selected.";
+  } else {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    $count = $stmt->fetchColumn();
 
-  }elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $error = "Invalid email format.";
+    if ($count > 0) {
+      $error = "Email is already registered.";
+    } else {
+      $hashed = password_hash($password, PASSWORD_DEFAULT);
 
-  }elseif (strlen($password) < 6) {
-      $error = "Password must be at least 6 characters.";
-    
-  }elseif (!in_array($role, $allowed_roles)) {
-      $error = "Invalid role selected.";
+      $insert = $pdo->prepare(
+        "INSERT INTO users (email, password, role) VALUES (?, ?, ?)"
+      );
+      $insert->execute([$email, $hashed, $role]);
 
-  }else {
-      $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
-      $stmt->execute([$email]);
-      $count = $stmt->fetchColumn();
+      $_SESSION['user_id'] = $pdo->lastInsertId();
+      $_SESSION['role'] = $role;
+      $_SESSION['email'] = $email;
 
-      if ($count > 0) {
-          $error = "Email is already registered.";
-        
+      if ($role == 'seeker') {
+        header("Location: ../jobseeker/profile.php?setup=1");
       } else {
-          $hashed = password_hash($password, PASSWORD_DEFAULT);
-
-          $insert = $pdo->prepare(
-          "INSERT INTO users (email, password, role) VALUES (?, ?, ?)"
-           );
-          $insert->execute([$email, $hashed, $role]);
-            
-          $_SESSION['user_id'] = $pdo->lastInsertId();
-          $_SESSION['role'] = $role;
-          $_SESSION['email'] = $email;
-
-          if($role == 'seeker'){
-            header ("Location: ../jobseeker/profile.php?setup=1");
-          } else {
-            header ("Location: ../employer/profile.php?setup=1");
-          }
-          exit();
+        header("Location: ../employer/profile.php?setup=1");
       }
+      exit();
+    }
   }
 }
 include "../includes/header.php";
@@ -72,7 +67,7 @@ include "../includes/header.php";
 
         <form action="register.php" method="POST">
           <?php if ($error): ?>
-          <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+            <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
           <?php endif; ?>
           <div class="mb-3">
             <div class="input-group">
@@ -80,24 +75,24 @@ include "../includes/header.php";
                 <i class="bi bi-envelope-open"></i>
               </span>
               <input type="email" name="email" class="form-control"
-                   placeholder="Email Address" autocomplete="off" required>
+                placeholder="Email Address" autocomplete="off" required>
             </div>
           </div>
-          
+
           <div class="mb-3">
             <div class="input-group">
               <span class="input-group-text">
                 <i class="bi bi-key"></i>
               </span>
               <input type="password" name="password" class="form-control"
-                     placeholder="Password" autocomplete="off" required>
+                placeholder="Password" autocomplete="off" required>
             </div>
           </div>
 
           <div class="mb-4">
             <select name="role" class="form-select" required>
               <option value="" disabled selected>Select Role</option>
-              <option value="seeker"   <?= (isset($role) && $role == 'seeker')   ? 'selected' : '' ?>>Seeker</option>
+              <option value="seeker" <?= (isset($role) && $role == 'seeker')   ? 'selected' : '' ?>>Seeker</option>
               <option value="employer" <?= (isset($role) && $role == 'employer') ? 'selected' : '' ?>>Employer</option>
             </select>
           </div>
