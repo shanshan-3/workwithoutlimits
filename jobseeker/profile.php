@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (move_uploaded_file($_FILES['resume']['tmp_name'], $destPath)) {
                 $resumePath = 'uploads/' . $filename;
             } else {
-                $error = "Upload failed. Make sure the uploads/ folder exists and is writable.";
+                $error = "Upload failed.";
             }
         }
     } elseif (isset($_FILES['resume']) && $_FILES['resume']['error'] !== UPLOAD_ERR_NO_FILE) {

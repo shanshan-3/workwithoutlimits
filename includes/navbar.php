@@ -51,7 +51,7 @@ $current = basename($_SERVER['PHP_SELF']);
         <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
             <a class="nav-link <?= $current==='profile.php'?'active':'' ?>" href="profile.php">
-              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($name) ?>
+              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['full_name']) ?>
             </a>
           </li>
           <li class="nav-item">
@@ -75,7 +75,7 @@ $current = basename($_SERVER['PHP_SELF']);
         <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
             <a class="nav-link <?= $current==='profile.php'?'active':'' ?>" href="profile.php">
-              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($name) ?>
+              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['full_name']) ?>
             </a>
           </li>
           <li class="nav-item">
