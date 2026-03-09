@@ -2,13 +2,21 @@
 $role = $_SESSION['role'] ?? 'guest';
 $name = $_SESSION['user']['name'] ?? '';
 $current = basename($_SERVER['PHP_SELF']);
+
+if ($role == 'seeker') {
+  $brandLink = '../jobseeker/dashboard.php';
+} elseif ($role == 'employer'){
+  $brandLink = '../employer/dashboard.php';
+} else {
+  $brandLink = '../index.php';
+}
 ?>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
   <div class="container">
 
-    <a class="navbar-brand fw-bold" href="index.php">
-      work<span class="text-warning font-">without</span>limits
+    <a class="navbar-brand fw-bold" href="<?= $brandLink ?>">
+      work<span class="text-warning font-weight-bold">without</span>limits
     </a>
 
     <?php if ($role !== 'guest'): ?>
