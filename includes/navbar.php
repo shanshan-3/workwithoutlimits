@@ -5,11 +5,12 @@ $current = basename($_SERVER['PHP_SELF']);
 
 if ($role == 'seeker') {
   $brandLink = '../jobseeker/dashboard.php';
-} elseif ($role == 'employer'){
+} elseif ($role == 'employer') {
   $brandLink = '../employer/dashboard.php';
 } else {
   $brandLink = '../index.php';
 }
+
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
@@ -21,11 +22,11 @@ if ($role == 'seeker') {
 
     <?php if ($role !== 'guest'): ?>
       <button class="navbar-toggler" type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#mainNav"
-              aria-controls="mainNav"
-              aria-expanded="false"
-              aria-label="Toggle navigation">
+        data-bs-toggle="collapse"
+        data-bs-target="#mainNav"
+        aria-controls="mainNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
     <?php endif; ?>
@@ -47,23 +48,23 @@ if ($role == 'seeker') {
 
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link <?= $current==='dashboard.php'?'active':'' ?>" href="dashboard.php">Dashboard</a>
+            <a class="nav-link <?= $current === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current==='browse_jobs.php'?'active':'' ?>" href="browse_jobs.php">Browse Jobs</a>
+            <a class="nav-link <?= $current === 'browse_jobs.php' ? 'active' : '' ?>" href="browse_jobs.php">Browse Jobs</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current==='my_applications.php'?'active':'' ?>" href="my_applications.php">My Applications</a>
+            <a class="nav-link <?= $current === 'my_applications.php' ? 'active' : '' ?>" href="my_applications.php">My Applications</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
-            <a class="nav-link <?= $current==='profile.php'?'active':'' ?>" href="profile.php">
+            <a class="nav-link <?= $current === 'profile.php' ? 'active' : '' ?>" href="profile.php">
               <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['full_name']) ?>
             </a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-outline-danger btn-sm" href="logout.php">Logout</a>
+            <a class="btn btn-outline-danger btn-sm" href="../auth/logout.php">Logout</a>
           </li>
         </ul>
 
@@ -71,23 +72,23 @@ if ($role == 'seeker') {
 
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link <?= $current==='dashboard.php'?'active':'' ?>" href="dashboard.php">Dashboard</a>
+            <a class="nav-link <?= $current === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current==='post_job.php'?'active':'' ?>" href="post_job.php">Post a Job</a>
+            <a class="nav-link <?= $current === 'post_job.php' ? 'active' : '' ?>" href="post_job.php">Post a Job</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current==='my_jobs.php'?'active':'' ?>" href="my_jobs.php">My Jobs</a>
+            <a class="nav-link <?= $current === 'my_jobs.php' ? 'active' : '' ?>" href="my_jobs.php">My Jobs</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
-            <a class="nav-link <?= $current==='profile.php'?'active':'' ?>" href="profile.php">
+            <a class="nav-link <?= $current === 'profile.php' ? 'active' : '' ?>" href="profile.php">
               <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['full_name']) ?>
             </a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-outline-danger btn-sm" href="logout.php">Logout</a>
+            <a class="btn btn-outline-danger btn-sm" href="../auth/logout.php">Logout</a>
           </li>
         </ul>
 
