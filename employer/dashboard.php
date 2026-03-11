@@ -6,7 +6,7 @@ require_once '../functions/user-functions.php';
 require_role('employer');
 
 $stmt = $pdo->prepare("
-    SELECT profile_id 
+    SELECT * 
     FROM employer_profiles 
     WHERE user_id = ?"
 );
@@ -37,7 +37,7 @@ try{
 <div class="container py-4">
     <div class="welcome-banner p-4 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
         <div>
-            <h2 class="mb-1">WELCOME, <span><?= htmlspecialchars($_SESSION['username']) ?></span> !</h2>
+            <h2 class="mb-1">WELCOME, <span><?= htmlspecialchars($profile['company_name']) ?></span> !</h2>
             <p class="mb-0">This is your dashboard. Manage your profile, view job postings, and explore new opportunities.</p>
         </div>
         <div class="d-flex gap-2">

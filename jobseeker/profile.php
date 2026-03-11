@@ -2,7 +2,6 @@
 require_once '../includes/session.php';
 require_once '../config/database.php';
 require_once '../functions/user-functions.php';
-include '../includes/header.php';
 
 require_role('seeker');
 
@@ -38,9 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($full_name === '') {
         $error = "Full name is required.";
-    }
-
-    if (!in_array($work_preference, ['Remote', 'Hybrid', 'Onsite'], true)) {
+    } elseif (!in_array($work_preference, ['Remote', 'Hybrid', 'Onsite'], true)) {
         $error = "Invalid work preference selected.";
     }
 
@@ -96,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+include '../includes/header.php';
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">

@@ -84,7 +84,7 @@ if ($role == 'seeker') {
         <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
             <a class="nav-link <?= $current === 'profile.php' ? 'active' : '' ?>" href="profile.php">
-              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['full_name']) ?>
+              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['company_name']) ?>
             </a>
           </li>
           <li class="nav-item">
