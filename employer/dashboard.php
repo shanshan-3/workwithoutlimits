@@ -5,7 +5,8 @@ require_once '../functions/user-functions.php';
 
 require_role('employer');
 
-$stmt = $pdo->prepare("
+$stmt = $pdo->prepare(
+    "
     SELECT * 
     FROM employer_profiles 
     WHERE user_id = ?"
@@ -19,18 +20,32 @@ if (!$profile) {
 }
 include '../includes/header.php';
 
-try{
+try {
     $stmt = $pdo->prepare("
         SELECT j.job_id, j.title, j.created_at
         FROM job_posting j
         WHERE j.employer_id = ?
         ORDER BY j.created_at DESC
+        AND status = 'active'
     ");
     $stmt->execute([$profile['profile_id']]);
     $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $jobs = [];
 }
+try {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) 
+        FROM applications a
+        JOIN job_posting j ON a.job_id = j.job_id
+        WHERE j.employer_id = ?
+    ");
+    $stmt->execute([$profile['profile_id']]);
+    $application_count = $stmt->fetchColumn();
+} catch (PDOException $e) {
+    $application_count = 0;
+}
+
 ?>
 <?php include '../includes/navbar.php'; ?>
 
@@ -45,6 +60,35 @@ try{
         </div>
     </div>
 
-    <div class="card-body d-flex align-items-center gap-3">
-        
-</div>
+    <div class="row g-3 mb-4">
+
+        <div class="col-12 col-md-4">
+            <div class="card stat-card h-100 shadow-sm">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-primary bg-opacity-10">
+                        <i class="bi bi-briefcase text-primary"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-primary fw-bold"><?= count($jobs) ?></div>
+                        <div class="text-muted small fw-medium">Active Job Posts</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card stat-card h-100 shadow-sm">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-warning bg-opacity-10">
+                        <i class="bi bi-people-fill text-warning"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-warning fw-bold"><?= $application_count ?></div>
+                        <div class="text-muted small fw-medium">Total Applications</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
