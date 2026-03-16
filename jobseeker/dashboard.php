@@ -31,6 +31,11 @@ try {
 } catch (PDOException $e) {
     $applications = [];
 }
+
+$total = count($applications);
+$pending = count(array_filter($applications, fn($a) => $a['status'] === 'pending'));
+$shortlisted = count(array_filter($applications, fn($a) => $a['status'] === 'shortlisted'));
+
 ?>
 <?php include '../includes/navbar.php'; ?>
 
@@ -45,7 +50,47 @@ try {
         </div>
     </div>
 
-    <div class="card-body d-flex align-items-center gap-3">
+<div class="row g-3 mb-4">
 
+    <div class="col-12 col-md-4">
+        <div class="card stat-card h-100 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon bg-primmary bg-opacity-10">
+                    <i class="bi bi-send text-primary"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-primary fw-bold"><?= $total ?></div>
+                    <div class="text-muted small fw-medium">Total Applications</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card stat-card h-100 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon bg-warning bg-opacity-10">
+                    <i class="bi bi-hourglass-split text-warning"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-warning fw-bold"><?= $pending ?></div>
+                    <div class="text-muted small fw-medium">Pending Applications</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card stat-card h-100 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon bg-success bg-opacity-10">
+                    <i class="bi bi-check2-circle text-success"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-success fw-bold"><?= $shortlisted ?></div>
+                    <div class="text-muted small fw-medium">Shortlisted</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

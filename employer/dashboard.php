@@ -46,6 +46,8 @@ try {
     $application_count = 0;
 }
 
+$closed_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'closed'));
+
 ?>
 <?php include '../includes/navbar.php'; ?>
 
@@ -90,5 +92,17 @@ try {
             </div>
         </div>
 
-
+        <div class="col-12 col-md-4">
+            <div class="card stat-card h-100 shadow-sm">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-secondary bg-opacity-10">
+                        <i class="bi bi-archive-fill text-secondary"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-secondary fw-bold"><?= $closed_jobs ?></div>
+                        <div class="text-muted small fw-medium">Closed Jobs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
