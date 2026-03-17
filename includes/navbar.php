@@ -35,7 +35,7 @@ if ($role == 'seeker') {
 
       <?php if ($role === 'guest'): ?>
 
-        <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <ul class="navbar-nav me-auto align-items-center gap-2">
           <li class="nav-item">
             <a class="btn btn-outline-light btn-sm" href="auth/login.php">Login</a>
           </li>
@@ -46,18 +46,18 @@ if ($role == 'seeker') {
 
       <?php elseif ($role === 'seeker'): ?>
 
-        <ul class="navbar-nav me-auto">
+        <ul class="navbar-nav me-auto align-items-center">
           <li class="nav-item">
             <a class="nav-link <?= $current === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current === 'browse_jobs.php' ? 'active' : '' ?>" href="browse_jobs.php">Browse Jobs</a>
+            <a class="nav-link <?= $current === 'post_job.php' ? 'active' : '' ?>" href="post_job.php">Browse Jobs</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current === 'my_applications.php' ? 'active' : '' ?>" href="my_applications.php">My Applications</a>
+            <a class="nav-link <?= $current === 'applications.php' ? 'active' : '' ?>" href="applications.php">My Applications</a>
           </li>
         </ul>
-        <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item">
             <a class="nav-link <?= $current === 'profile.php' ? 'active' : '' ?>" href="profile.php">
               <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['full_name']) ?>
@@ -70,7 +70,7 @@ if ($role == 'seeker') {
 
       <?php elseif ($role === 'employer'): ?>
 
-        <ul class="navbar-nav me-auto">
+        <ul class="navbar-nav me-auto align-items-center">
           <li class="nav-item">
             <a class="nav-link <?= $current === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
           </li>
@@ -78,7 +78,7 @@ if ($role == 'seeker') {
             <a class="nav-link <?= $current === 'post_job.php' ? 'active' : '' ?>" href="post_job.php">Post a Job</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current === 'my_jobs.php' ? 'active' : '' ?>" href="my_jobs.php">My Jobs</a>
+            <a class="nav-link <?= $current === 'jobs.php' ? 'active' : '' ?>" href="jobs.php">My Jobs</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto align-items-center gap-2">
