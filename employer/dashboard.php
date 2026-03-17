@@ -106,3 +106,58 @@ $closed_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'closed'));
             </div>
         </div>
     </div>
+<!-- JOB POSTING PAGE -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Recent Job Postings</h5>
+        <div class="card-jobs">
+            <a href="post-job.php" class="btn btn-warning fw-bold text-dark"><i class="bi bi-plus me-1"></i>Post a Job</a>
+        </div>
+    </div>
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body p-0">
+            <?php if(count($jobs) > 0): ?>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>JOB TITLE</th>
+                            <th>WORK TYPE</th>
+                            <th>ARRANGEMENT</th>
+                            <th>APPLICANTS</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($jobs as $job): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($job['title']) ?></td>
+                            <td><?= htmlspecialchars($job['work_type']) ?></td>
+                            <td><?= htmlspecialchars($job['arrangement']) ?></td>
+                            <td><?= $job['applicant_count'] ?></td>
+                            <td>
+                                <?php if($job['status'] === 'active'): ?>
+                                    <span class="badge bg-success">Active</span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">Closed</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <a href="edit-job.php?id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                <a href="delete-job.php?id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this job?');"><i class="bi bi-trash"></i></a>
+                                <a href="applicantions.php?job_id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php else: ?>
+            <div class="text-center p-4">
+                <i class="bi bi-briefcase text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3 mb-0">No job postings found. Start by posting your first job!</p>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
