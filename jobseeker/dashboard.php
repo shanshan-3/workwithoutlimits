@@ -49,7 +49,7 @@ $shortlisted = count(array_filter($applications, fn($a) => $a['status'] === 'sho
             <a href="#" class="btn btn-warning fw-bold text-dark"><i class="bi bi-search me-1"></i>Browse Jobs</a>
         </div>
     </div>
-
+<!-- STATS CARD -->
 <div class="row g-3 mb-4">
 
     <div class="col-12 col-md-4">
@@ -91,6 +91,60 @@ $shortlisted = count(array_filter($applications, fn($a) => $a['status'] === 'sho
                     <div class="text-muted small fw-medium">Shortlisted</div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+<!-- RECENT APPLICATIONS PAGE -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Recent Applications</h5>
+    </div>
+    <div class="card mb-3 shadow-sm">
+            <div class="card-body p-0">
+                <?php if (count($applications) > 0): ?>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>JOB / COMPANY</th>
+                                <th>APPLIED ON</th>
+                                <th>ARRANGEMENT</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($applications as $application): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($application['job_id']) ?></td>
+                                    <td><?= htmlspecialchars($application['applied_at']) ?></td>
+                                    <td>
+                                        <?php if($application['arrangement'] === 'remote'): ?>
+                                            <span class="badge bg-info text-dark">Remote</span>
+                                        <?php elseif($application['arrangement'] === 'hybrid'): ?>
+                                            <span class="badge bg-primary">Hybrid</span>
+                                        <?php elseif($application['arrangement'] === 'on-site'): ?>
+                                            <span class="badge bg-secondary">On-site</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($application['status'] === 'pending'): ?>
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        <?php elseif ($application['status'] === 'shortlisted'): ?>
+                                            <span class="badge bg-success">Shortlisted</span>
+                                        <?php elseif ($application['status'] === 'rejected'): ?>
+                                            <span class="badge bg-danger">Rejected</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php else: ?>
+                <div class="text-center p-4">
+                    <i class="bi bi-briefcase display-4 text-muted"></i>
+                    <p class="mb-0">You haven't applied to any jobs yet. Start exploring and apply to your dream job!</p>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

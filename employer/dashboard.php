@@ -61,7 +61,7 @@ $closed_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'closed'));
             <a href="post-job.php" class="btn btn-warning fw-bold text-dark"><i class="bi bi-plus me-1"></i>Post a Job</a>
         </div>
     </div>
-
+<!-- STATS CARD -->
     <div class="row g-3 mb-4">
 
         <div class="col-12 col-md-4">
