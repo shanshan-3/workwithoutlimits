@@ -35,7 +35,7 @@ if ($role == 'seeker') {
 
       <?php if ($role === 'guest'): ?>
 
-        <ul class="navbar-nav me-auto align-items-center gap-2">
+        <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
             <a class="btn btn-outline-light btn-sm" href="auth/login.php">Login</a>
           </li>
@@ -70,7 +70,7 @@ if ($role == 'seeker') {
 
       <?php elseif ($role === 'employer'): ?>
 
-        <ul class="navbar-nav me-auto align-items-center">
+        <ul class="navbar-nav me-auto align-items-center gap-2">
           <li class="nav-item">
             <a class="nav-link <?= $current === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
           </li>
