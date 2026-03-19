@@ -114,14 +114,17 @@ $shortlisted = count(array_filter($applications, fn($a) => $a['status'] === 'sho
                         <tbody>
                             <?php foreach ($applications as $application): ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($application['job_id']) ?></td>
+                                    <td>
+                                        <?= htmlspecialchars($application['title']) ?>
+                                        <small class="text-muted d-block"><?= htmlspecialchars($application['company_name']) ?></small>
+                                    </td>
                                     <td><?= htmlspecialchars($application['applied_at']) ?></td>
                                     <td>
                                         <?php if($application['arrangement'] === 'remote'): ?>
                                             <span class="badge bg-info text-dark">Remote</span>
                                         <?php elseif($application['arrangement'] === 'hybrid'): ?>
                                             <span class="badge bg-primary">Hybrid</span>
-                                        <?php elseif($application['arrangement'] === 'on-site'): ?>
+                                        <?php elseif($application['arrangement'] === 'onsite'): ?>
                                             <span class="badge bg-secondary">On-site</span>
                                         <?php endif; ?>
                                     </td>

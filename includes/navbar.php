@@ -3,6 +3,20 @@ $role = $_SESSION['role'] ?? 'guest';
 $name = $_SESSION['user']['name'] ?? '';
 $current = basename($_SERVER['PHP_SELF']);
 
+$profile = null;
+if ($role === 'seeker' && isset($_SESSION['user_id'])) {
+  if (!isset($pdo)) require_once __DIR__ . '/../config/database.php';
+  $stmt = $pdo->prepare("SELECT full_name FROM seeker_profiles WHERE user_id = ?");
+  $stmt->execute([$_SESSION['user_id']]);
+  $profile = $stmt->fetch(PDO::FETCH_ASSOC);
+
+} elseif ($role === 'employer' && isset($_SESSION['user_id'])) {
+  if (!isset($pdo)) require_once __DIR__ . '/../config/database.php';
+  $stmt = $pdo->prepare("SELECT company_name FROM employer_profiles WHERE user_id = ?");
+  $stmt->execute([$_SESSION['user_id']]);
+  $profile = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 if ($role == 'seeker') {
   $brandLink = '../jobseeker/dashboard.php';
 } elseif ($role == 'employer') {
@@ -60,7 +74,7 @@ if ($role == 'seeker') {
         <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item">
             <a class="nav-link <?= $current === 'profile.php' ? 'active' : '' ?>" href="profile.php">
-              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['full_name']) ?>
+              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['full_name'] ?? '') ?>
             </a>
           </li>
           <li class="nav-item">
@@ -84,7 +98,7 @@ if ($role == 'seeker') {
         <ul class="navbar-nav ms-auto align-items-center gap-2">
           <li class="nav-item">
             <a class="nav-link <?= $current === 'profile.php' ? 'active' : '' ?>" href="profile.php">
-              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['company_name']) ?>
+              <i class="bi bi-person-circle"></i> <?= htmlspecialchars($profile['company_name'] ?? '') ?>
             </a>
           </li>
           <li class="nav-item">

@@ -25,8 +25,8 @@ try {
         SELECT j.job_id, j.title, j.created_at
         FROM job_posting j
         WHERE j.employer_id = ?
+        AND j.status = 'active'
         ORDER BY j.created_at DESC
-        AND status = 'active'
     ");
     $stmt->execute([$profile['profile_id']]);
     $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -145,7 +145,7 @@ $closed_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'closed'));
                             <td>
                                 <a href="edit-job.php?id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                                 <a href="delete-job.php?id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this job?');"><i class="bi bi-trash"></i></a>
-                                <a href="applicantions.php?job_id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                                <a href="applications.php?job_id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
                             </td>
                         </tr>
                         <?php endforeach; ?>
