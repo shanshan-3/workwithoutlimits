@@ -11,12 +11,12 @@ require_role('employer');
 
 <div class="container py-5">
     <div class="col-12 col-md-8 col-lg-6 mx-auto">
-        <h2 class="text-center mb-4" style="font-weight: 600;">Post a New Job</h2>
-        <p class="text-center text-muted mb-4">Fill out the form below to post a new job opening.</p>
+        <h2 class="text-center mb-4" style="font-weight: 600;">Edit Job</h2>
+        <p class="text-center text-muted mb-4">Fill out the form below to edit the job listing.</p>
         <div class="card shadow-sm">
             <div class="card-body">
 
-                <form action="post-job.php" method="POST">
+                <form action="edit-job.php" method="POST">
 
                     <div class="mb-3">
                         <label for="job_title" class="form-label fw-semibold">Job Title</label>
@@ -77,7 +77,7 @@ require_role('employer');
                     </div>
                     <br>
                     <button type="submit" class="btn btn-warning btn-lg text-dark fw-bold w-100">
-                        Post Job
+                        Edit Job
                     </button>
 
                 </form>
