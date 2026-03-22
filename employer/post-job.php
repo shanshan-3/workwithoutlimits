@@ -6,6 +6,24 @@ include '../config/database.php';
 
 require_role('employer');
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+    $data = [
+        ':employer_id' => $_SESSION['user_id'],
+        ':job_title' => trim($_POST['job_title'] ?? ''),
+        ':job_description' => trim($_POST['job_description'] ?? ''),
+        ':required_skills' => trim($_POST['required_skills'] ?? ''),
+        ':work_type' => trim($_POST['work_type'] ?? ''),
+        ':arrangement' => trim($_POST['arrangement'] ?? ''),
+        ':accessibility_features' => isset($_POST['accessibility']) ? implode(', ', $_POST['accessibility']) : '',
+    ];
+    if (post_job($pdo, $data)) {
+        header('Location: dashboard.php');
+        exit;
+    } else {
+        echo '<div class="alert alert-danger">Failed to post the job. Please try again.</div>';
+    }
+}
+
 ?>
 <?php include '../includes/navbar.php'; ?>
 
@@ -61,7 +79,7 @@ require_role('employer');
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Accessibility Options</label>
+                        <label class="form-label fw-semibold">Accessibility Features</label>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="wheelchair_accessible" name="accessibility[]" value="Wheelchair Accessible">
                             <label for="wheelchair_accessible" class="form-check-label me-3">Wheelchair Accessible Office</label>
