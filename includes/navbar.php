@@ -65,7 +65,7 @@ if ($role == 'seeker') {
             <a class="nav-link <?= $current === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current === 'post_job.php' ? 'active' : '' ?>" href="post_job.php">Browse Jobs</a>
+            <a class="nav-link <?= $current === 'post-job.php' ? 'active' : '' ?>" href="post-job.php">Browse Jobs</a>
           </li>
           <li class="nav-item">
             <a class="nav-link <?= $current === 'applications.php' ? 'active' : '' ?>" href="applications.php">My Applications</a>
@@ -89,7 +89,7 @@ if ($role == 'seeker') {
             <a class="nav-link <?= $current === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <?= $current === 'post_job.php' ? 'active' : '' ?>" href="post_job.php">Post a Job</a>
+            <a class="nav-link <?= $current === 'post-job.php' ? 'active' : '' ?>" href="post-job.php">Post a Job</a>
           </li>
           <li class="nav-item">
             <a class="nav-link <?= $current === 'jobs.php' ? 'active' : '' ?>" href="jobs.php">My Jobs</a>
