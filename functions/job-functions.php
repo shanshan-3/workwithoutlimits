@@ -19,4 +19,21 @@ function post_job(PDO $pdo, array $data): bool
     $stmt = $pdo->prepare($sql);
     return $stmt->execute($data);
 }
+function update_job(PDO $pdo, int $job_id, array $data): bool
+{
+    $sql = "
+        UPDATE job_postings
+        SET title = :title,
+            description = :job_description,
+            required_skills = :required_skills,
+            work_type = :work_type,
+            arrangement = :arrangement,
+            accessibility_features = :accessibility_features,
+            status = :status
+        WHERE job_id = :job_id
+    ";
+    $stmt = $pdo->prepare($sql);
+    $data[':job_id'] = $job_id;
+    return $stmt->execute($data);
+}
 
