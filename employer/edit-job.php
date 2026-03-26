@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$job_id = filter_input(INPUT_GET, 'job_id', FILTER_VALIDATE_INT);
+$job_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $employer_id = $_SESSION['user_id'];
 
 if (!$job_id || $job_id <= 0) {
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'required_skills' => $_POST['required_skills'],
             'work_type' => $_POST['work_type'],
             'arrangement' => $_POST['arrangement'],
-            'accessibility' => $accessibility,
+            'accessibility_features' => $accessibility,
             'status' => $status
         ];
 
@@ -72,7 +72,7 @@ $saved_accessibility = explode(', ', $job['accessibility_features'] ?? '');
 <div class="container py-5">
     <div class="col-12 col-md-8 col-lg-6 mx-auto">
         <div class="card shadow-sm border-0">
-            <form action="edit-job.php?job_id=<?= $job_id ?>" method="POST">
+            <form action="edit-job.php?id=<?= $job_id ?>" method="POST">
                 <div class="card-header bg-white pt-4 pb-0 border-0 d-flex justify-content-between align-items-center">
                     <div>
                         <h2 class="h3 mb-1" style="font-weight: 600;">Edit Job</h2>

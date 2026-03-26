@@ -1,16 +1,16 @@
 <?php
-include '../includes/header.php';
-include '../functions/user-functions.php';
-include '../includes/session.php';
-include '../config/database.php';
+require_once '../includes/session.php';
+require_once '../config/database.php';
+require_once '../functions/user-functions.php';
+require_once '../functions/job-functions.php'; 
 
 require_role('employer');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     $data = [
         ':employer_id' => $_SESSION['user_id'],
-        ':job_title' => trim($_POST['job_title'] ?? ''),
-        ':job_description' => trim($_POST['job_description'] ?? ''),
+        ':title' => trim($_POST['job_title'] ?? ''),
+        ':description' => trim($_POST['job_description'] ?? ''),
         ':required_skills' => trim($_POST['required_skills'] ?? ''),
         ':work_type' => trim($_POST['work_type'] ?? ''),
         ':arrangement' => trim($_POST['arrangement'] ?? ''),
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         echo '<div class="alert alert-danger">Failed to post the job. Please try again.</div>';
     }
 }
-
+require_once '../includes/header.php';
 ?>
 <?php include '../includes/navbar.php'; ?>
 
@@ -65,16 +65,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                     <div class="mb-3">
                         <label for="arrangement" class="form-label fw-semibold">Work Arrangement</label>
                         <div class="form-check">
-                            <input type="radio" class="form-check-input" id="remote" name="arrangement" value="Remote" required>
-                            <label for="remote" class="form-check-label me-3">Remote</label>
+                            <input type="radio" class="form-check-input" id="remote" name="arrangement" value="remote" required>
+                            <label for="remote" class="form-check-label me-3">remote</label>
                         </div>
                         <div class="form-check">
-                            <input type="radio" class="form-check-input" id="hybrid" name="arrangement" value="Hybrid" required>
-                            <label for="hybrid" class="form-check-label me-3">Hybrid</label>
+                            <input type="radio" class="form-check-input" id="hybrid" name="arrangement" value="hybrid" required>
+                            <label for="hybrid" class="form-check-label me-3">hybrid</label>
                         </div>
                         <div class="form-check">
-                            <input type="radio" class="form-check-input" id="onsite" name="arrangement" value="On-site" required>
-                            <label for="onsite" class="form-check-label me-3">On-site</label>
+                            <input type="radio" class="form-check-input" id="onsite" name="arrangement" value="on-site" required>
+                            <label for="onsite" class="form-check-label me-3">on-site</label>
                         </div>
                     </div>
 

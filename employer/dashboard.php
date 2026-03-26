@@ -2,6 +2,7 @@
 require_once '../includes/session.php';
 require_once '../config/database.php';
 require_once '../functions/user-functions.php';
+require_once '../functions/job-functions.php';
 
 require_role('employer');
 
@@ -22,13 +23,13 @@ include '../includes/header.php';
 
 try {
     $stmt = $pdo->prepare("
-        SELECT j.job_id, j.title, j.created_at
+        SELECT j.job_id, j.title, j.created_at, j.work_type, j.arrangement, j.status, 
+        (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.job_id) AS applicant_count
         FROM job_posting j
         WHERE j.employer_id = ?
-        AND j.status = 'active'
         ORDER BY j.created_at DESC
     ");
-    $stmt->execute([$profile['profile_id']]);
+    $stmt->execute([$_SESSION['user_id']]);
     $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $jobs = [];
@@ -40,12 +41,28 @@ try {
         JOIN job_posting j ON a.job_id = j.job_id
         WHERE j.employer_id = ?
     ");
-    $stmt->execute([$profile['profile_id']]);
+    $stmt->execute([$_SESSION['user_id']]);
     $application_count = $stmt->fetchColumn();
 } catch (PDOException $e) {
     $application_count = 0;
 }
+try {
+    $stmt = $pdo->prepare("
+        SELECT u.full_name, j.title 
+        FROM applications a
+        JOIN users u ON a.user_id = u.user_id
+        JOIN job_posting j ON a.job_id = j.job_id
+        WHERE j.employer_id = ?
+        ORDER BY a.created_at DESC
+        LIMIT 4
+    ");
+    $stmt->execute([$_SESSION['user_id']]);
+    $recent_applicants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $recent_applicants = [];
+}
 
+$active_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'active'));
 $closed_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'closed'));
 
 ?>
@@ -61,7 +78,7 @@ $closed_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'closed'));
             <a href="post-job.php" class="btn btn-warning fw-bold text-dark"><i class="bi bi-plus me-1"></i>Post a Job</a>
         </div>
     </div>
-<!-- STATS CARD -->
+    <!-- STATS CARD -->
     <div class="row g-3 mb-4">
 
         <div class="col-12 col-md-4">
@@ -106,7 +123,7 @@ $closed_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'closed'));
             </div>
         </div>
     </div>
-<!-- JOB POSTING PAGE -->
+    <!-- JOB POSTING PAGE -->
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Recent Job Postings</h5>
         <div class="card-jobs">
@@ -115,49 +132,89 @@ $closed_jobs = count(array_filter($jobs, fn($j) => $j['status'] === 'closed'));
     </div>
     <div class="card mb-3 shadow-sm">
         <div class="card-body p-0">
-            <?php if(count($jobs) > 0): ?>
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>JOB TITLE</th>
-                            <th>WORK TYPE</th>
-                            <th>ARRANGEMENT</th>
-                            <th>APPLICANTS</th>
-                            <th>STATUS</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($jobs as $job): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($job['title']) ?></td>
-                            <td><?= htmlspecialchars($job['work_type']) ?></td>
-                            <td><?= htmlspecialchars($job['arrangement']) ?></td>
-                            <td><?= $job['applicant_count'] ?></td>
-                            <td>
-                                <?php if($job['status'] === 'active'): ?>
-                                    <span class="badge bg-success">Active</span>
-                                <?php else: ?>
-                                    <span class="badge bg-secondary">Closed</span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <a href="edit-job.php?id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-                                <a href="delete-job.php?id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this job?');"><i class="bi bi-trash"></i></a>
-                                <a href="applications.php?job_id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+            <?php if (count($jobs) > 0): ?>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>JOB TITLE</th>
+                                <th>WORK TYPE</th>
+                                <th>ARRANGEMENT</th>
+                                <th>APPLICANTS</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($jobs as $job): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($job['title']) ?></td>
+                                    <td><?= htmlspecialchars($job['work_type']) ?></td>
+                                    <td>
+                                        <?php if ($job['arrangement'] === 'remote'): ?>
+                                            <span class="badge bg-primary">remote</span>
+                                        <?php elseif ($job['arrangement'] === 'hybrid'): ?>
+                                            <span class="badge bg-warning">hybrid</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">on-site</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= $job['applicant_count'] ?></td>
+                                    <td>
+                                        <?php if ($job['status'] === 'active'): ?>
+                                            <span class="badge bg-success">Active</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">Closed</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <a href="edit-job.php?id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                        <a href="applications.php?id=<?= $job['job_id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php else: ?>
-            <div class="text-center p-4">
-                <i class="bi bi-briefcase text-muted" style="font-size: 3rem;"></i>
-                <p class="text-muted mt-3 mb-0">No job postings found. Start by posting your first job!</p>
-            </div>
+                <div class="text-center p-4">
+                    <i class="bi bi-briefcase text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3 mb-0">No job postings found. Start by posting your first job!</p>
+                </div>
             <?php endif; ?>
         </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Recent Applicants</h5>
+    </div>
+    <div class="row g-3">
+        <?php if (count($recent_applicants) > 0): ?>
+            <?php foreach ($recent_applicants as $applicant): ?>
+                <div class="col-12 col-md-6">
+                    <div class="card applicant-card h-100 shadow-sm">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <div class="applicant-avatar bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold"><?= htmlspecialchars($applicant['full_name']) ?></div>
+                                <div class="text-muted small">Applied for: <?= htmlspecialchars($applicant['title']) ?></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-person text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3 mb-0">No recent applicants found.</p>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
     </div>
 </div>
