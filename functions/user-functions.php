@@ -51,27 +51,46 @@ function get_employer_profile(PDO $pdo, int $user_id): ?array
 
 function save_employer_profile(PDO $pdo, array $data): bool
 {
-    $sql = "
-        INSERT INTO employer_profiles
-            (user_id, company_name, industry, location, description,
-                contact_email)
-        VALUES
-            (:user_id, :company_name, :industry, :location, :description,
-                :contact_email)
-        ON DUPLICATE KEY UPDATE
-            company_name   = VALUES(company_name),
-            industry       = VALUES(industry),
-            location       = VALUES(location),
-            description    = VALUES(description),
-            contact_email  = VALUES(contact_email)
-    "; 
-    $stmt = $pdo->prepare($sql);
-    return $stmt->execute([
+    $params = [
         ':user_id'      => (int)  $data['user_id'],
         ':company_name' => trim($data['company_name'] ?? ''),
         ':industry'     => trim($data['industry']     ?? ''),
         ':location'     => trim($data['location']     ?? ''),
         ':description'  => trim($data['description']  ?? ''),
-        ':contact_email'=> trim($data['contact_email']?? ''),
-    ]);
+        ':contact_email' => trim($data['contact_email'] ?? ''),
+    ];
+
+    $check = $pdo->prepare("SELECT profile_id FROM employer_profiles WHERE user_id = :user_id LIMIT 1");
+    $check->execute([':user_id' => $params[':user_id']]);
+    $existing = $check->fetch(PDO::FETCH_ASSOC);
+
+    if ($existing) {
+        $update = $pdo->prepare("
+            UPDATE employer_profiles
+            SET company_name = :company_name,
+                industry = :industry,
+                location = :location,
+                description = :description,
+                contact_email = :contact_email
+            WHERE profile_id = :profile_id
+        ");
+
+        return $update->execute([
+            ':profile_id'    => (int)$existing['profile_id'],
+            ':company_name'  => $params[':company_name'],
+            ':industry'      => $params[':industry'],
+            ':location'      => $params[':location'],
+            ':description'   => $params[':description'],
+            ':contact_email' => $params[':contact_email'],
+        ]);
+    }
+
+    $insert = $pdo->prepare("
+        INSERT INTO employer_profiles
+            (user_id, company_name, industry, location, description, contact_email)
+        VALUES
+            (:user_id, :company_name, :industry, :location, :description, :contact_email)
+    ");
+
+    return $insert->execute($params);
 }

@@ -2,11 +2,13 @@
 require_once '../config/database.php';
 require_once '../includes/session.php';
 require_once '../functions/job-functions.php';
+require_once '../functions/user-functions.php';
 
 if (!isset($_SESSION['user_id'])) {
     exit('<p class="text-danger">Unauthorized. Please log in.</p>');
 }
 $seeker_id = $_SESSION['user_id'];
+$seeker_profile = get_seeker_profile($pdo, $seeker_id) ?: [];
 
 $filters = [
     'keyword' => $_GET['keyword'] ?? '',
@@ -47,6 +49,17 @@ foreach ($jobs as $job):
                     <div class="bg-primary bg-opacity-10 p-2 rounded text-dark">
                         <i class="bi bi-building-fill" style="font-size: 1.25rem;"></i>
                     </div>
+                    <?php
+                        $match_score = compute_match($seeker_profile, $job);
+                        if ($match_score >= 70) {
+                            $badge_class = 'bg-success';
+                        } elseif ($match_score >= 40) {
+                            $badge_class = 'bg-warning text-dark';
+                        } else {
+                            $badge_class = 'bg-secondary';
+                        }
+                    ?>
+                    <span class="badge <?= $badge_class ?> fs-6"><?= $match_score ?>% Match</span>
                 </div>
 
                 <div>

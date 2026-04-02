@@ -57,7 +57,7 @@ $jobs = get_jobs($pdo, $filters);
         </div>
     </div>
 
-
+<!-- Jobs Header -->
     <div id="jobHead" class="row g-4">
         <div class="container py-4">
             <h3 class="fw-bold mb-1"><i class="bi bi-briefcase text-dark me-2"></i>Jobs</h3>
@@ -71,7 +71,7 @@ $jobs = get_jobs($pdo, $filters);
         </div>
     </div>
 </div>
-
+<!-- Job Modal -->
 <div class="modal fade" id="jobModal" tabindex="-1" aria-labelledby="jobModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
