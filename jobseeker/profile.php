@@ -96,13 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../includes/header.php';
 ?>
 
-<!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="../index.php">
-            work<span class="text-warning">without</span>limits
-        </a>
-    </div>
-</nav> -->
 <?php require_once '../includes/navbar.php'; ?>
 
 <div class="container py-5">
