@@ -1,6 +1,7 @@
 <?php
 require_once '../includes/session.php';
 require_once '../config/database.php';
+require_once '../functions/job-functions.php';
 require_once '../functions/user-functions.php';
 
 require_role('seeker');
@@ -36,6 +37,23 @@ try {
 $total = count($applications);
 $pending = count(array_filter($applications, fn($a) => $a['status'] === 'pending'));
 $shortlisted = count(array_filter($applications, fn($a) => $a['status'] === 'shortlisted'));
+
+// Recommendation logic
+$all_jobs = get_jobs($pdo);
+$recommended_jobs = [];
+
+foreach ($all_jobs as $job) {
+    $score = compute_match($user, $job);
+    if ($score >= 20) {
+        $job['match_score'] = $score;
+        $recommended_jobs[] = $job;
+    }
+}
+
+usort($recommended_jobs, function($a, $b) {
+    return $b['match_score'] <=> $a['match_score'];
+});
+$recommended_jobs = array_slice($recommended_jobs, 0, 5);
 
 ?>
 <?php include '../includes/navbar.php'; ?>
@@ -95,65 +113,55 @@ $shortlisted = count(array_filter($applications, fn($a) => $a['status'] === 'sho
             </div>
         </div>
     </div>
-    <!-- RECOMMENDED JOBS -->
-    <div class="card-header d-flex justif-contend-between align-items-center mb-3">
-        <h5 class="mb-0">
-            <i class="bi bi-briefcase"></i> Recommended Jobs
-        </h5>
-    </div>
-    <div class="mb-3 shadow-sm">
-        <div class="card-body bg-light p-0">
-            <?php if(count($applications) > 0): ?>
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>JOB / COMPANY</th>
-                                <th>APPLIED ON</th>
-                                <th>ARRANGEMENT</th>
-                                <th>STATUS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($applications as $application): ?>
-                                <tr>
-                                    <td>
-                                        <?= htmlspecialchars($application['title']) ?>
-                                        <small class="text-muted d-block"><?= htmlspecialchars($application['company_name']) ?></small>
-                                    </td>
-                                    <td><?= htmlspecialchars($application['applied_at']) ?></td>
-                                    <td>
-                                        <?php if ($application['arrangement'] === 'remote'): ?>
-                                            <span class="badge bg-info text-dark">Remote</span>
-                                        <?php elseif ($application['arrangement'] === 'hybrid'): ?>
-                                            <span class="badge bg-primary">Hybrid</span>
-                                        <?php elseif ($application['arrangement'] === 'onsite'): ?>
-                                            <span class="badge bg-secondary">On-site</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($application['status'] === 'pending'): ?>
-                                            <span class="badge bg-warning">Pending</span>
-                                        <?php elseif ($application['status'] === 'shortlisted'): ?>
-                                            <span class="badge bg-success">Shortlisted</span>
-                                        <?php elseif ($application['status'] === 'rejected'): ?>
-                                            <span class="badge bg-danger">Rejected</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+    <!-- RECOMMENDED FOR YOU -->
+<div class="card-header d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">
+        <i class="bi bi-briefcase"></i> Recommended for You
+    </h5>
+</div>
+<div class="card mb-3 shadow-sm rounded-1">
+    <div class="card-body p-3">
+        <div class="row g-3 p-0">
+            <?php if (count($recommended_jobs) > 0): ?>
+                <?php foreach ($recommended_jobs as $job): ?>
+                    <div class="col-12 border-bottom pb-2 mb-2" style="position: relative;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1 text-primary"><?php echo htmlspecialchars($job['title']); ?></h6>
+                                <p class="small mb-1 text-muted">
+                                    <i class="bi bi-building"></i> <?php echo htmlspecialchars($job['company_name']); ?> 
+                                    • <i class="bi bi-clock"></i> <?php echo htmlspecialchars($job['work_type']); ?>
+                                </p>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <?php 
+                                    $skills = explode(',', $job['required_skills']);
+                                    foreach(array_slice($skills, 0, 3) as $skill): ?>
+                                        <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">
+                                            <?php echo htmlspecialchars(trim($skill)); ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge rounded-pill <?php echo $job['match_score'] > 70 ? 'bg-success' : 'bg-primary'; ?>">
+                                    <?php echo $job['match_score']; ?>% Match
+                                </span>
+                            </div>
+                        </div>
+                        <!-- Stretched link makes the whole area clickable to the job details -->
+                        <a href="job_details.php?id=<?php echo $job['job_id']; ?>" class="stretched-link"></a>
+                    </div>
+                <?php endforeach; ?>
             <?php else: ?>
-                <div class="text-center p-5">
-                    <i class="bi bi-briefcase display-4 text-muted"></i>
-                    <p class="mb-0">You haven't applied to any jobs yet.</p>
+                <div class="col-12 text-center py-3">
+                    <p class="text-muted small mb-0">No specific recommendations found. Update your profile skills to get better matches!</p>
                 </div>
             <?php endif; ?>
-
         </div>
     </div>
+</div>
+
+
     <!-- RECENT APPLICATIONS PAGE -->
     <div class="card-header d-flex justify-content-between align-items-center mb-3">
         <h5 class="mb-0">Recent Applications</h5>
