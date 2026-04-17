@@ -12,10 +12,10 @@ function save_seeker_profile(PDO $pdo, array $data): bool
     $sql = "
         INSERT INTO seeker_profiles
             (user_id, full_name, phone, location, skills,
-             accessibility_needs, work_preference, bio, resume_path)
+            accessibility_needs, work_preference, bio, resume_path)
         VALUES
             (:user_id, :full_name, :phone, :location, :skills,
-             :accessibility_needs, :work_preference, :bio, :resume_path)
+            :accessibility_needs, :work_preference, :bio, :resume_path)
         ON DUPLICATE KEY UPDATE
             full_name            = VALUES(full_name),
             phone                = VALUES(phone),
