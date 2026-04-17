@@ -13,18 +13,24 @@ $stmt = $pdo->prepare(
     WHERE user_id = ?"
 );
 $stmt->execute([$_SESSION['user_id']]);
-$profile = $stmt->fetch(PDO::FETCH_ASSOC);
 
+$profile = get_seeker_profile($pdo, $_SESSION['user_id']);
 if (!$profile) {
-    header("Location: profile.php?setup=1");
-    exit();
+    header('Location: profile.php?setup=1');
+    exit;
 }
+
 include '../includes/header.php';
 
 try {
     $stmt = $pdo->prepare("
-        SELECT a.job_id, a.status, a.applied_at
+        SELECT 
+            a.job_id, a.status, a.applied_at,
+            jp.title, jp.arrangement,
+            ep.company_name
         FROM applications a
+        JOIN job_posting jp ON a.job_id = jp.job_id
+        JOIN employer_profiles ep ON jp.employer_id = ep.user_id
         WHERE a.user_id = ?
         ORDER BY a.applied_at DESC
     ");
@@ -33,6 +39,7 @@ try {
 } catch (PDOException $e) {
     $applications = [];
 }
+
 
 $total = count($applications);
 $pending = count(array_filter($applications, fn($a) => $a['status'] === 'pending'));
@@ -43,7 +50,7 @@ $all_jobs = get_jobs($pdo);
 $recommended_jobs = [];
 
 foreach ($all_jobs as $job) {
-    $score = compute_match($user, $job);
+    $score = compute_match($profile, $job);
     if ($score >= 20) {
         $job['match_score'] = $score;
         $recommended_jobs[] = $job;
@@ -113,54 +120,83 @@ $recommended_jobs = array_slice($recommended_jobs, 0, 5);
             </div>
         </div>
     </div>
+
     <!-- RECOMMENDED FOR YOU -->
-<div class="card-header d-flex justify-content-between align-items-center mb-3">
-    <h5 class="mb-0">
-        <i class="bi bi-briefcase"></i> Recommended for You
-    </h5>
-</div>
-<div class="card mb-3 shadow-sm rounded-1">
-    <div class="card-body p-3">
-        <div class="row g-3 p-0">
-            <?php if (count($recommended_jobs) > 0): ?>
-                <?php foreach ($recommended_jobs as $job): ?>
-                    <div class="col-12 border-bottom pb-2 mb-2" style="position: relative;">
-                        <div class="d-flex justify-content-between align-items-start">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">
+            <i class="bi bi-stars text-dark me-1"></i> Recommended for You
+        </h5>
+        <a href="jobs.php" class="btn btn-sm btn-secondary">View All</a>
+    </div>
+
+    <div class="row g-3 mb-5">
+        <?php if (count($recommended_jobs) > 0): ?>
+            <?php foreach ($recommended_jobs as $job): ?>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card job-card h-100 shadow-sm border-2" style="position: relative; transition: transform 0.2s;">
+                        <div class="card-body d-flex flex-column gap-3">
+                            
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded text-dark">
+                                    <i class="bi bi-building-fill" style="font-size: 1.25rem;"></i>
+                                </div>
+                                <?php
+                                    $score = $job['match_score'];
+                                    if ($score >= 70) {
+                                        $badge_class = 'bg-success';
+                                    } elseif ($score >= 40) {
+                                        $badge_class = 'bg-warning text-dark';
+                                    } else {
+                                        $badge_class = 'bg-secondary';
+                                    }
+                                ?>
+                                <span class="badge <?= $badge_class ?> fs-6"><?= $score ?>% Match</span>
+                            </div>
+
                             <div>
-                                <h6 class="mb-1 text-primary"><?php echo htmlspecialchars($job['title']); ?></h6>
-                                <p class="small mb-1 text-muted">
-                                    <i class="bi bi-building"></i> <?php echo htmlspecialchars($job['company_name']); ?> 
-                                    • <i class="bi bi-clock"></i> <?php echo htmlspecialchars($job['work_type']); ?>
-                                </p>
-                                <div class="d-flex gap-1 flex-wrap">
-                                    <?php 
-                                    $skills = explode(',', $job['required_skills']);
-                                    foreach(array_slice($skills, 0, 3) as $skill): ?>
-                                        <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">
-                                            <?php echo htmlspecialchars(trim($skill)); ?>
-                                        </span>
-                                    <?php endforeach; ?>
+                                <h5 class="card-title fw-bold mb-1 text-dark"><?= htmlspecialchars($job['title'] ?? 'Untitled') ?></h5>
+                                <div class="job-company text-muted small">
+                                    <i class="bi bi-building me-1"></i><?= htmlspecialchars($job['company_name'] ?? 'Company') ?>
                                 </div>
                             </div>
-                            <div class="text-end">
-                                <span class="badge rounded-pill <?php echo $job['match_score'] > 70 ? 'bg-success' : 'bg-primary'; ?>">
-                                    <?php echo $job['match_score']; ?>% Match
+
+                            <div class="d-flex flex-wrap gap-1">
+                                <?php 
+                                    $arr = strtolower($job['arrangement'] ?? '');
+                                    $arr_class = ($arr == 'remote') ? 'bg-info text-dark' : (($arr == 'onsite') ? 'bg-light text-dark border' : 'bg-secondary text-white');
+                                ?>
+                                <span class="badge <?= $arr_class ?> fw-semibold">
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    <?= htmlspecialchars(ucfirst($arr)) ?>
+                                </span>
+
+                                <?php 
+                                    $wt = strtolower($job['work_type'] ?? '');
+                                    $wt_class = ($wt == 'fulltime') ? 'bg-primary' : (($wt == 'parttime') ? 'bg-secondary' : 'bg-dark text-white');
+                                ?>
+                                <span class="badge <?= $wt_class ?> fw-semibold text-dark">
+                                    <i class="bi bi-clock me-1"></i>
+                                    <?= htmlspecialchars(ucfirst($wt)) ?>
                                 </span>
                             </div>
-                        </div>
-                        <!-- Stretched link makes the whole area clickable to the job details -->
-                        <a href="job_details.php?id=<?php echo $job['job_id']; ?>" class="stretched-link"></a>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="col-12 text-center py-3">
-                    <p class="text-muted small mb-0">No specific recommendations found. Update your profile skills to get better matches!</p>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
 
+                            <div class="job-posted text-muted small mt-auto pt-2 border-top">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                Posted <?= isset($job['created_at']) ? date('M d, Y', strtotime($job['created_at'])) : 'Recently' ?>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-12">
+                <div class="card bg-light border-0 py-4 text-center">
+                    <p class="text-muted mb-0">No specific recommendations yet. Try adding more skills to your profile!</p>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
 
     <!-- RECENT APPLICATIONS PAGE -->
     <div class="card-header d-flex justify-content-between align-items-center mb-3">
